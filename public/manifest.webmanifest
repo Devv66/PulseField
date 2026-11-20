@@ -1,0 +1,10 @@
+{
+  "name": "PulseField — Field Triage",
+  "short_name": "PulseField",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07161e",
+  "theme_color": "#07161e",
+  "description": "Offline-first incident triage powered by Firebase AI Logic hybrid inference.",
+  "icons": [{ "src": "/pulsefield-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

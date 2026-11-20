@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each anonymous or signed-in session owns only its own incident namespace.
+    match /users/{userId}/incidents/{incidentId} {
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.keys().hasOnly([
+                      'id', 'status', 'createdAt', 'updatedAt', 'narrative', 'triage',
+                      'timeline', 'ai', 'ownerUid', 'savedAt'
+                    ]);
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.ownerUid == resource.data.ownerUid
+                    && request.resource.data.keys().hasOnly([
+                      'id', 'status', 'createdAt', 'updatedAt', 'narrative', 'triage',
+                      'timeline', 'ai', 'ownerUid', 'savedAt'
+                    ]);
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
