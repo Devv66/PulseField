@@ -56,7 +56,7 @@ const result = await model.generateContent(prompt);
 | Firebase product | PulseField implementation |
 |---|---|
 | **Firebase AI Logic** | Hybrid Gemini Nano / cloud Gemini responder handoff in `src/firebase.js` |
-| **Firebase App Check** | reCAPTCHA Enterprise provider protects Firebase requests when the site key is supplied |
+| **Firebase App Check** | Required reCAPTCHA Enterprise attestation for the live Firebase path; the app does not report Firebase as connected without the site key |
 | **Firebase Authentication** | Anonymous sign-in creates a private user namespace without delaying a first response |
 | **Cloud Firestore** | Incident snapshots stored at `users/{uid}/incidents/{incidentId}` with persistent local cache |
 | **Remote Config** | A live `cloud_model` setting and `ai_enabled` operational kill switch |
@@ -113,6 +113,9 @@ const result = await model.generateContent(prompt);
 npm install
 cp .env.example .env.local
 npm run dev
+```
+
+On Windows PowerShell, use `Copy-Item .env.example .env.local` instead of `cp`. The live Firebase path requires all core Web App values plus `VITE_RECAPTCHA_ENTERPRISE_SITE_KEY`; the optional cloud model defaults to `gemini-3.5-flash-lite`.
 ```
 
 Without `.env.local`, PulseField intentionally starts in **offline demo mode**. The complete local safety engine, UI, export, and browser-only save still work. It will not claim that its demo handoff came from Gemini.
