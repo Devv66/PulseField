@@ -48,7 +48,7 @@ test('does not mistake a collapsed structure for an unresponsive person', () => 
 });
 
 test('flags a person explicitly reported as collapsed', () => {
-  const result = runLocalTriage('A worker has collapsed near the entrance.');
+  const result = runLocalTriage('One adult has collapsed near the entrance.');
   assert.equal(result.level, 'CRITICAL');
   assert.ok(result.flags.some((item) => item.id === 'unresponsive'));
 });
