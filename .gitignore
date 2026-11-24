@@ -1,0 +1,19 @@
+# Dependencies and production output
+node_modules/
+dist/
+coverage/
+
+# Local environment and Firebase project configuration
+.env
+.env.*
+!.env.example
+.firebaserc
+.firebase/
+
+# Local tooling output
+*.log
+.DS_Store
+.vite/
+.vercel/
+playwright-report/
+test-results/

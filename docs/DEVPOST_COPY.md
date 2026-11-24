@@ -1,6 +1,6 @@
 # PulseField — Devpost submission copy
 
-> Replace only the final repository URL and public YouTube URL after publication. The text below is deliberately accurate: it does not claim a live on-device result until one is recorded from a compatible Chrome Desktop device.
+> Source repository is public. Add a demo video and hosted URL only after those destinations are genuinely published and verified. This copy deliberately does not claim a live on-device result until one is recorded from a compatible Chrome Desktop device.
 
 ## Project name
 
@@ -89,6 +89,6 @@ We also learned that source transparency, user-gesture model preparation, offlin
 
 ## Links
 
-- **Source code:** `REPLACE_WITH_PUBLIC_GITHUB_REPOSITORY_URL`
-- **Demo video (under 3 minutes, public):** `REPLACE_WITH_PUBLIC_YOUTUBE_URL`
-- **Live demo:** `REPLACE_WITH_FIREBASE_HOSTING_URL`
+- **Source code:** https://github.com/Devv66/PulseField
+- **Demo video:** Not published yet; add the public YouTube URL after recording and verifying the final demo.
+- **Live demo:** Not deployed yet; add the Firebase Hosting URL after deployment and smoke testing.

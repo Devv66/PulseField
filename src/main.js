@@ -180,6 +180,7 @@ app.addEventListener('click', async (event) => {
     import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
     import.meta.env.VITE_FIREBASE_PROJECT_ID,
     import.meta.env.VITE_FIREBASE_APP_ID,
+    import.meta.env.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY,
   ].every(Boolean);
   if (!hasFirebaseEnvironment) {
     firebaseStatus = { connected: false, mode: 'demo', policy: { cloudModel: 'gemini-3.5-flash-lite' } };

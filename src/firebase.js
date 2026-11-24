@@ -14,7 +14,7 @@ async function loadFirebaseProducts() {
   return { app, appCheck, auth, ai, firestore, remoteConfig };
 }
 
-const REQUIRED_CONFIG = ['apiKey', 'authDomain', 'projectId', 'appId'];
+const REQUIRED_CONFIG = ['apiKey', 'authDomain', 'projectId', 'appId', 'appCheckSiteKey'];
 const SYSTEM_INSTRUCTION = `You are PulseField's incident handoff assistant. You are not a clinician and you never diagnose, prescribe, or tell someone not to call emergency services. Convert the de-identified responder narrative into concise observational handoff notes. Return valid JSON only with keys summary, hazards, observations, questionsForResponder, and handoff. Use arrays of short strings for hazards, observations, and questionsForResponder. If a life threat may exist, say to contact emergency services immediately.`;
 const HANDOFF_SCHEMA = {
   type: 'object',
@@ -38,11 +38,19 @@ function configFromEnv() {
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+    appCheckSiteKey: import.meta.env.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY,
   };
 }
 
 export function hasFirebaseConfig(config = configFromEnv()) {
   return REQUIRED_CONFIG.every((key) => Boolean(config[key]));
+}
+
+export function normalizeInferenceSource(source) {
+  const normalized = String(source ?? '').toUpperCase();
+  if (normalized === 'ON_DEVICE') return 'on_device';
+  if (normalized === 'IN_CLOUD') return 'in_cloud';
+  throw new Error(`Firebase AI Logic returned an unknown inference source: ${String(source)}`);
 }
 
 function parseJsonReply(text) {
@@ -80,10 +88,10 @@ export class PulseFieldFirebase {
     const { getAI, GoogleAIBackend } = this.sdk.ai;
 
     this.app = initializeApp(config);
-    const appCheckSiteKey = import.meta.env.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY;
-    if (appCheckSiteKey) {
-      initializeAppCheck(this.app, { provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey), isTokenAutoRefreshEnabled: true });
-    }
+    initializeAppCheck(this.app, {
+      provider: new ReCaptchaEnterpriseProvider(config.appCheckSiteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
 
     this.auth = getAuth(this.app);
     const authResult = await signInAnonymously(this.auth);
@@ -121,8 +129,7 @@ export class PulseFieldFirebase {
         systemInstruction: SYSTEM_INSTRUCTION,
         generationConfig: {
           responseMimeType: 'application/json',
-          responseJsonSchema: HANDOFF_SCHEMA,
-          temperature: 0.1,
+          responseSchema: HANDOFF_SCHEMA,
           maxOutputTokens: 700,
         },
       },
@@ -152,7 +159,7 @@ export class PulseFieldFirebase {
     const response = result.response;
     return {
       ...parseJsonReply(response.text()),
-      source: response.inferenceSource === 'on_device' ? 'on_device' : 'in_cloud',
+      source: normalizeInferenceSource(response.inferenceSource),
       latencyMs: Math.round(performance.now() - started),
       cloudInputWasRedacted: deidentified !== narrative,
     };

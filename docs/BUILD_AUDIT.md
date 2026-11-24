@@ -2,10 +2,17 @@
 
 Run this checklist just before publishing. Every item is deliberately testable.
 
+
+## Latest automated evidence
+
+- GitHub Actions run: https://github.com/Devv66/PulseField/actions/runs/45453530614
+- Commit: `49a6ced664d9ad810be6f8b908155b9401f55ab1`
+- Result: **success** — `npm ci` and `npm run check` completed successfully on Node.js 24.12.0.
+
 ## Code integrity
 
-- [ ] `npm ci` succeeds from a clean clone.
-- [ ] `npm run check` passes (tests plus production build).
+- [x] `npm ci` succeeds from a clean clone (verified by GitHub Actions).
+- [x] `npm run check` passes (tests plus production build; verified by GitHub Actions).
 - [ ] `git status` has no `.env.local`, credential, token, or generated video file staged.
 - [ ] All UI demo flows label demo/local output honestly; no simulation is labelled Gemini.
 - [ ] `src/firebase.js` uses Firebase AI Logic `InferenceMode.PREFER_ON_DEVICE` and renders the SDK-provided `response.inferenceSource`.

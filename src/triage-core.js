@@ -17,7 +17,7 @@ const RED_FLAG_RULES = [
   {
     id: 'unresponsive',
     label: 'Unresponsive person',
-    pattern: /\b(unconscious|unresponsive|passed out|not responding|collapsed)\b/i,
+    pattern: /\b(unconscious|unresponsive|passed out|not responding|(?:a\s+|an\s+|the\s+|one\s+|two\s+|three\s+|some\s+)?(?:injured\s+)?(?:person|people|patient|patients|adult|child|someone|man|woman|worker|victim)\s+(?:(?:is|was|has|have|had)\s+)?collapsed|(?:he|she|they)\s+(?:(?:is|was|has|have|had)\s+)?collapsed|collapsed\s+(?:person|patient|adult|child))\b/i,
     weight: 100,
     cue: 'Responsiveness concern reported',
   },
