@@ -4,6 +4,29 @@ import {
   addTimelineEvent, createIncident, extractVitals, normalizeNarrative,
   redactForCloud, runLocalTriage, safeExport,
 } from '../src/triage-core.js';
+import { hasFirebaseConfig, normalizeInferenceSource } from '../src/firebase.js';
+
+
+test('Firebase live configuration requires the App Check site key', () => {
+  const config = {
+    apiKey: 'api-key',
+    authDomain: 'example.firebaseapp.com',
+    projectId: 'pulsefield-test',
+    appId: 'app-id',
+    appCheckSiteKey: 'recaptcha-enterprise-site-key',
+  };
+  assert.equal(hasFirebaseConfig(config), true);
+  assert.equal(hasFirebaseConfig({ ...config, appCheckSiteKey: '' }), false);
+});
+
+test('normalizes the official Firebase AI Logic inference source enums', () => {
+  assert.equal(normalizeInferenceSource('ON_DEVICE'), 'on_device');
+  assert.equal(normalizeInferenceSource('IN_CLOUD'), 'in_cloud');
+  assert.equal(normalizeInferenceSource('on_device'), 'on_device');
+  assert.equal(normalizeInferenceSource('in_cloud'), 'in_cloud');
+  assert.throws(() => normalizeInferenceSource(undefined), /unknown inference source/i);
+  assert.throws(() => normalizeInferenceSource('UNKNOWN'), /unknown inference source/i);
+});
 
 test('normalizes whitespace and caps narratives safely', () => {
   assert.equal(normalizeNarrative('  one\n\n two  '), 'one two');
@@ -15,6 +38,19 @@ test('flags a breathing emergency as critical without an AI call', () => {
   assert.equal(result.level, 'CRITICAL');
   assert.ok(result.flags.some((item) => item.id === 'breathing'));
   assert.match(result.actions[0], /emergency services/i);
+});
+
+
+test('does not mistake a collapsed structure for an unresponsive person', () => {
+  const result = runLocalTriage('The warehouse roof partly collapsed after a storm. Two people are outside and safe.');
+  assert.equal(result.level, 'WATCH');
+  assert.equal(result.flags.some((item) => item.id === 'unresponsive'), false);
+});
+
+test('flags a person explicitly reported as collapsed', () => {
+  const result = runLocalTriage('A worker has collapsed near the entrance.');
+  assert.equal(result.level, 'CRITICAL');
+  assert.ok(result.flags.some((item) => item.id === 'unresponsive'));
 });
 
 test('flags severe bleeding as critical', () => {
