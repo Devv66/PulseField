@@ -116,7 +116,6 @@ npm run dev
 ```
 
 On Windows PowerShell, use `Copy-Item .env.example .env.local` instead of `cp`. The live Firebase path requires all core Web App values plus `VITE_RECAPTCHA_ENTERPRISE_SITE_KEY`; the optional cloud model defaults to `gemini-3.5-flash-lite`.
-```
 
 Without `.env.local`, PulseField intentionally starts in **offline demo mode**. The complete local safety engine, UI, export, and browser-only save still work. It will not claim that its demo handoff came from Gemini.
 
