@@ -43,3 +43,11 @@ Run this checklist just before publishing. Every item is deliberately testable.
 - [ ] Video shows the working app, a real local first-response run, and an actual source-labelled Firebase hybrid result.
 - [ ] Devpost project title, tagline, links, built-with tags, and narrative match `docs/DEVPOST_COPY.md`.
 - [ ] Public source repo opens in an incognito browser, contains Apache-2.0 license, setup documentation, test instructions, and no credentials.
+
+## 2026-11-25 follow-up verification
+
+- [x] Local triage remains usable with the browser forced offline (Chromium smoke test).
+- [x] Current service-worker update strategy is covered by automated regression tests: cache version migration, old-cache deletion, network-first navigation, offline HTML fallback, missing-asset handling, and bypassing cross-origin/non-GET requests.
+- [x] npm run check passes after the service-worker changes: 22 tests passed; production build succeeded.
+- [ ] Production Firebase initialization is not yet verified. The live Vercel browser currently falls back to local demo mode. A production-configured build reproduced a Firebase Authentication API_KEY_INVALID response during anonymous sign-in. Do not label Auth, Firestore persistence, or AI Logic as live until the Firebase Web API key/project association, key restrictions, Identity Toolkit API, and Anonymous provider are verified in Firebase/Google Cloud Console.
+- [ ] Real Gemini Nano and cloud inference, App Check enforcement, and cross-user Firestore isolation remain unverified; no live model response or cloud Firestore write is claimed by this audit.
