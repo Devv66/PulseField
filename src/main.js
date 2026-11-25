@@ -69,8 +69,8 @@ function renderTimeline(incident) {
 
 function appMarkup() {
   const hasIncident = Boolean(currentIncident);
-  const connectionText = firebaseStatus.connected ? `Firebase connected · anonymous session` : 'Offline demo · Firebase not configured';
-  const policyText = firebaseStatus.connected ? `Cloud fallback: ${firebaseStatus.policy.cloudModel}` : 'Local deterministic triage active';
+  const connectionText = firebaseStatus.connected ? `Firebase connected · anonymous session` : firebaseStatus.mode === 'unavailable' ? 'Firebase unavailable · Local safety active' : 'Offline demo · Firebase not configured';
+  const policyText = firebaseStatus.connected ? `Cloud fallback: ${firebaseStatus.policy.cloudModel}` : firebaseStatus.mode === 'unavailable' ? 'Firebase initialization failed · Local deterministic triage active' : 'Local deterministic triage active';
   return `
     <div class="shell">
       <header class="topbar"><a class="brand" href="#top" aria-label="PulseField home"><img src="/pulsefield-mark.svg" alt=""/><span>Pulse<span>Field</span></span></a><div class="connection"><span class="status-light ${firebaseStatus.connected ? 'online' : 'local'}"></span><div><strong>${escapeHtml(connectionText)}</strong><small>${escapeHtml(policyText)}</small></div></div></header>
@@ -192,7 +192,7 @@ app.addEventListener('click', async (event) => {
       firebaseStatus = await firebase.init();
       uiMessage = { tone: 'success', text: 'Firebase services connected: App Check, anonymous Auth, offline Firestore, Remote Config, and AI Logic are ready.' };
     } catch (error) {
-      firebaseStatus = firebase?.status?.() || { connected: false, mode: 'unavailable', policy: { cloudModel: 'gemini-3.5-flash-lite' } };
+      firebaseStatus = { ...(firebase?.status?.() || {}), connected: false, mode: 'unavailable', policy: firebase?.status?.()?.policy || { cloudModel: 'gemini-3.5-flash-lite' } };
       uiMessage = { tone: 'warning', text: `Firebase initialization skipped: ${error.message}. Local safety tools remain active.` };
     }
   }
