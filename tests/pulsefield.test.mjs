@@ -4,7 +4,8 @@ import {
   addTimelineEvent, createIncident, extractVitals, normalizeNarrative,
   redactForCloud, runLocalTriage, safeExport,
 } from '../src/triage-core.js';
-import { hasFirebaseConfig, normalizeInferenceSource } from '../src/firebase.js';
+import { HANDOFF_SCHEMA, assertAppCheckAttestation, hasFirebaseConfig, normalizeInferenceSource } from '../src/firebase.js';
+import viteConfig from '../vite.config.js';
 
 
 test('Firebase live configuration requires the App Check site key', () => {
@@ -17,6 +18,12 @@ test('Firebase live configuration requires the App Check site key', () => {
   };
   assert.equal(hasFirebaseConfig(config), true);
   assert.equal(hasFirebaseConfig({ ...config, appCheckSiteKey: '' }), false);
+});
+
+test('rejects a missing or empty App Check attestation token', () => {
+  assert.deepEqual(assertAppCheckAttestation({ token: 'opaque-app-check-token' }), { token: 'opaque-app-check-token' });
+  assert.throws(() => assertAppCheckAttestation(null), /did not return an attestation token/i);
+  assert.throws(() => assertAppCheckAttestation({ token: '' }), /did not return an attestation token/i);
 });
 
 test('normalizes the official Firebase AI Logic inference source enums', () => {
@@ -129,4 +136,22 @@ test('exports a portable JSON envelope with a safety notice', () => {
   const exportObject = JSON.parse(safeExport(incident));
   assert.equal(exportObject.incident.id, incident.id);
   assert.match(exportObject.safetyNotice, /not a medical record/i);
+});
+
+test('Firebase AI Logic response schema uses the supported JSON schema subset', () => {
+  assert.equal(HANDOFF_SCHEMA.type, 'object');
+  assert.deepEqual(HANDOFF_SCHEMA.required, [
+    'summary',
+    'hazards',
+    'observations',
+    'questionsForResponder',
+    'handoff',
+  ]);
+  assert.equal(HANDOFF_SCHEMA.additionalProperties, undefined);
+  assert.equal(HANDOFF_SCHEMA.properties.summary.type, 'string');
+  assert.equal(HANDOFF_SCHEMA.properties.hazards.items.type, 'string');
+});
+
+test('Vite deduplicates Firebase core packages into one component registry', () => {
+  assert.deepEqual(viteConfig.resolve.dedupe, ['@firebase/app', '@firebase/component', '@firebase/util']);
 });

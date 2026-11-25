@@ -16,7 +16,7 @@ async function loadFirebaseProducts() {
 
 const REQUIRED_CONFIG = ['apiKey', 'authDomain', 'projectId', 'appId', 'appCheckSiteKey'];
 const SYSTEM_INSTRUCTION = `You are PulseField's incident handoff assistant. You are not a clinician and you never diagnose, prescribe, or tell someone not to call emergency services. Convert the de-identified responder narrative into concise observational handoff notes. Return valid JSON only with keys summary, hazards, observations, questionsForResponder, and handoff. Use arrays of short strings for hazards, observations, and questionsForResponder. If a life threat may exist, say to contact emergency services immediately.`;
-const HANDOFF_SCHEMA = {
+export const HANDOFF_SCHEMA = {
   type: 'object',
   properties: {
     summary: { type: 'string' },
@@ -26,8 +26,14 @@ const HANDOFF_SCHEMA = {
     handoff: { type: 'string' },
   },
   required: ['summary', 'hazards', 'observations', 'questionsForResponder', 'handoff'],
-  additionalProperties: false,
 };
+
+export function assertAppCheckAttestation(attestation) {
+  if (!attestation || typeof attestation.token !== 'string' || !attestation.token.trim()) {
+    throw new Error('Firebase App Check did not return an attestation token.');
+  }
+  return attestation;
+}
 
 function configFromEnv() {
   return {
@@ -81,17 +87,29 @@ export class PulseFieldFirebase {
 
     this.sdk = await loadFirebaseProducts();
     const { initializeApp } = this.sdk.app;
-    const { initializeAppCheck, ReCaptchaEnterpriseProvider } = this.sdk.appCheck;
+    const { initializeAppCheck, getToken: getAppCheckToken, ReCaptchaEnterpriseProvider } = this.sdk.appCheck;
     const { getAuth, signInAnonymously } = this.sdk.auth;
     const { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } = this.sdk.firestore;
     const { getRemoteConfig, fetchAndActivate, getValue } = this.sdk.remoteConfig;
     const { getAI, GoogleAIBackend } = this.sdk.ai;
 
     this.app = initializeApp(config);
-    initializeAppCheck(this.app, {
+    this.appCheck = initializeAppCheck(this.app, {
       provider: new ReCaptchaEnterpriseProvider(config.appCheckSiteKey),
       isTokenAutoRefreshEnabled: true,
     });
+
+    // Do not report Firebase as connected until real App Check attestation works.
+    // initializeAppCheck() only wires the provider; it does not prove that the
+    // configured Enterprise site key can mint a token for this hostname.
+    try {
+      assertAppCheckAttestation(await getAppCheckToken(this.appCheck, true));
+    } catch (error) {
+      throw new Error(
+        'Firebase App Check attestation failed. Verify the reCAPTCHA Enterprise website key, key type, and allowed production domain in the Firebase/Google Cloud project',
+        { cause: error },
+      );
+    }
 
     this.auth = getAuth(this.app);
     const authResult = await signInAnonymously(this.auth);
