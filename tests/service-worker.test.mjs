@@ -182,3 +182,21 @@ test('non-GET requests and cross-origin requests are not intercepted', async () 
   await worker.dispatch('fetch', external);
   assert.equal(external.responsePromise, null);
 });
+
+test('install precaches the hashed JavaScript and CSS bundles referenced by index.html', async () => {
+  const fetched = [];
+  const html = '<script type="module" src="/assets/app-abc123.js"></script>'
+    + '<link rel="stylesheet" href="/assets/app-def456.css">';
+  const worker = createWorker(async (request) => {
+    fetched.push(request.url);
+    return new Response(request.url.endsWith('/index.html') ? html : 'asset body', { status: 200 });
+  });
+
+  await worker.dispatch('install', worker.makeLifecycleEvent());
+
+  const cache = await worker.caches.open('pulsefield-shell-v2');
+  assert.equal(await (await cache.match('/assets/app-abc123.js')).text(), 'asset body');
+  assert.equal(await (await cache.match('/assets/app-def456.css')).text(), 'asset body');
+  assert.ok(fetched.includes(ORIGIN + '/assets/app-abc123.js'));
+  assert.ok(fetched.includes(ORIGIN + '/assets/app-def456.css'));
+});

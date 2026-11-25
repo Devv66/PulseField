@@ -2,12 +2,32 @@ const CACHE_PREFIX = 'pulsefield-';
 const CACHE = 'pulsefield-shell-v2';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/pulsefield-mark.svg'];
 
+async function precacheBuildAssets(cache) {
+  const indexUrl = new URL('/index.html', self.location.origin).href;
+  const index = await cache.match(indexUrl);
+  if (!index) return;
+
+  const html = await index.text();
+  const assets = new Set();
+  const references = html.matchAll(/(?:src|href)=["']([^"']+)["']/g);
+
+  for (const reference of references) {
+    const assetUrl = new URL(reference[1], self.location.origin);
+    if (assetUrl.origin === self.location.origin && assetUrl.pathname.startsWith('/assets/')) {
+      assets.add(assetUrl.href);
+    }
+  }
+
+  if (assets.size > 0) await cache.addAll([...assets]);
+}
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE)
-      .then((cache) => cache.addAll(SHELL))
-      .then(() => self.skipWaiting()),
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll(SHELL);
+    await precacheBuildAssets(cache);
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
