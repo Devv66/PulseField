@@ -51,3 +51,13 @@ Run this checklist just before publishing. Every item is deliberately testable.
 - [x] npm run check passes after the service-worker changes: 23 tests passed; production build succeeded.
 - [ ] Production Firebase initialization is not yet verified. The live Vercel browser currently falls back to local demo mode. A production-configured build reproduced a Firebase Authentication API_KEY_INVALID response during anonymous sign-in. Do not label Auth, Firestore persistence, or AI Logic as live until the Firebase Web API key/project association, key restrictions, Identity Toolkit API, and Anonymous provider are verified in Firebase/Google Cloud Console.
 - [ ] Real Gemini Nano and cloud inference, App Check enforcement, and cross-user Firestore isolation remain unverified; no live model response or cloud Firestore write is claimed by this audit.
+
+## 2026-11-25 Firebase integration follow-up
+
+- [x] Deduplicated `@firebase/app`, `@firebase/component`, and `@firebase/util` in Vite so App Check registers against the same Firebase component registry as the app and other products.
+- [x] Removed the unsupported `additionalProperties` field from the Firebase AI Logic response schema; the live Gemini endpoint previously rejected it with HTTP 400.
+- [x] Added a fail-closed App Check token check. The app does not show `Firebase Connected` until the browser obtains a real App Check token.
+- [x] Clean `npm ci` completed with 0 reported vulnerabilities; `npm run check` passed 26 tests and the production build.
+- [x] Actual browser test identified the remaining Google-side blocker: the configured reCAPTCHA Enterprise site key fails `grecaptcha.enterprise.execute()` with `Invalid site key or not loaded in api.js`. A subsequent Gemini request was rejected with HTTP 401 `Firebase App Check token is invalid`.
+- [ ] Replace the invalid/mismatched key with a Web-type, score-based reCAPTCHA Enterprise key created in the Google Cloud project linked to `pulsefield-6087e`; enable the reCAPTCHA Enterprise API, allowlist `pulsefield-omega.vercel.app`, then register that key for the matching Web app in Firebase Console → Security → App Check and update Vercel `VITE_RECAPTCHA_ENTERPRISE_SITE_KEY`.
+- [ ] Re-run browser attestation, anonymous Auth, Firestore write/read-isolation, and Gemini cloud inference after the corrected key is deployed. Until then, the app deliberately remains in local-only mode.
