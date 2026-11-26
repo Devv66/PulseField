@@ -221,3 +221,15 @@ body::before{inset:-25%!important;z-index:0!important;opacity:.9;background:radi
 .glass-modal-grid>div:nth-child(1) .glass-icon{color:#00e5ff!important;background:rgba(0,229,255,.13)!important}.glass-modal-grid>div:nth-child(2) .glass-icon{color:#ff00e5!important;background:rgba(255,0,229,.13)!important}.glass-modal-grid>div:nth-child(3) .glass-icon{color:#00ff95!important;background:rgba(0,255,149,.13)!important}
 .glass-overlay{background:rgba(2,4,10,.35)!important;backdrop-filter:blur(20px) saturate(150%)!important}
 @keyframes refSpectrum{0%{transform:translate3d(-1.5%,0,0) rotate(-3deg);filter:hue-rotate(0deg)}50%{transform:translate3d(1%,1.5%,0) rotate(1deg);filter:hue-rotate(28deg)}100%{transform:translate3d(1.5%,-1%,0) rotate(3deg);filter:hue-rotate(-28deg)}}
+
+/* Neon theme contrast refinement: make text bright, crisp, and readable */
+.shell{color:#f5f8ff!important}
+.shell :is(h1,h2,h3,h4,strong,b,.title,.heading){color:#f7fbff!important;text-shadow:0 0 8px rgba(0,229,255,.09)}
+.shell :is(p,li,label,span,small,.lede,.microcopy,.secure-note,.connection,.description,.subtitle){color:#d6e3f4!important}
+.shell .eyebrow,.shell .section-kicker,.shell .label,.shell .meta-label{color:#9af5ff!important;text-shadow:0 0 9px rgba(0,229,255,.16)}
+.shell :is(.muted,.secondary,.hint,.helper,.caption,.footnote,.status-copy){color:#aebfd5!important}
+.shell :is(input,textarea,select){color:#f2f7ff!important;background:rgba(3,7,15,.72)!important;border-color:rgba(155,190,235,.32)!important}
+.shell :is(input,textarea,select)::placeholder{color:#a6bad4!important;opacity:1}
+.shell :is(button,.button,.chip,.text-button){color:#f1f7ff!important}
+.glass-modal h2,.glass-modal strong{color:#f7fbff!important}.glass-modal :is(p,small){color:#c9d8e9!important}.glass-modal .eyebrow{color:#9af5ff!important}
+.shell .notice{color:#e5efff!important}
