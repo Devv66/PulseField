@@ -75,7 +75,7 @@ function appMarkup() {
     <div class="shell">
       <header class="topbar"><a class="brand" href="#top" aria-label="PulseField home"><img src="/pulsefield-mark.svg" alt=""/><span>Pulse<span>Field</span></span></a><div class="connection"><span class="status-light ${firebaseStatus.connected ? 'online' : 'local'}"></span><div><strong>${escapeHtml(connectionText)}</strong><small>${escapeHtml(policyText)}</small></div></div></header>
       <main id="top">
-        <section class="hero"><div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> FIELD RESPONSE · POCKET WORKFLOW</p><h1>Make the first minutes <em>count.</em><br/>Even without a signal.</h1><p class="lede">A practical field tool for turning what you see into clear next steps and a handoff others can act on. The local safety check works first; connected assistance is optional.</p><div class="hero-chips"><span>Offline-first</span><span>Privacy-aware</span><span>Human stays in control</span></div></div><aside class="mission-card"><p class="eyebrow">READY STATE</p><div class="pulse-orb"><i></i><i></i><i></i></div><strong>Local safety engine armed</strong><p>Never waits for a model, a login, or a network before showing escalation guidance.</p><a href="#triage">Start incident <span>↓</span></a></aside></section>
+        <section class="hero"><div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> FIELD RESPONSE · POCKET WORKFLOW</p><h1>Make the first minutes <em>count.</em><br/>Even without a signal.</h1><p class="lede">A practical field tool for turning what you see into clear next steps and a handoff others can act on. The local safety check works first; connected assistance is optional.</p><div class="hero-chips"><span>Offline-first</span><span>Privacy-aware</span><span>Human stays in control</span></div></div><aside class="mission-card"><p class="eyebrow">READY STATE</p><div class="pulse-orb"><i></i><i></i><i></i></div><strong>Local safety engine armed</strong><p>Never waits for a model, a login, or a network before showing escalation guidance.</p><a href="#triage">Start incident <span>↓</span></a><button class="glass-trigger" data-popup="overview">Explore dashboard <span>↗</span></button></aside></section>
         <section class="notice ${uiMessage.tone}" role="status">${escapeHtml(uiMessage.text)}</section>
         <section class="triage-workspace" id="triage"><div class="composer"><div class="composer-head"><div><p class="eyebrow">01 / FIELD NOTE</p><h2>Describe the situation</h2></div><span class="secure-note">◈ Remains in this browser until you choose to save</span></div><label for="narrative">Observable facts, hazards, symptoms, people affected, and any values you know.</label><textarea id="narrative" maxlength="4000" placeholder="Example: Two people are outside after a vehicle crash. One is awake with chest pain and trouble breathing. Fuel is leaking.">${escapeHtml(currentIncident?.narrative || '')}</textarea><div class="quick-row"><span>Try a safe demo:</span><button class="chip" data-action="load-demo">Storm collapse</button><button class="chip" data-action="clear">Clear</button></div><div class="composer-foot"><p>Do not delay calling emergency services for this tool.</p><button class="button emergency" data-action="run-triage">Run local safety check <span>→</span></button></div></div>
           <aside class="side-rail"><p class="eyebrow">PROTOCOL</p><div class="protocol-item"><span>01</span><div><strong>Scene safety first</strong><p>Do not become another casualty.</p></div></div><div class="protocol-item"><span>02</span><div><strong>Escalate early</strong><p>Call local emergency services when in doubt.</p></div></div><div class="protocol-item"><span>03</span><div><strong>Hand off clearly</strong><p>Record facts, time, hazards, and changes.</p></div></div><a class="emergency-link" href="tel:1122">Pakistan emergency line <b>1122 ↗</b></a></aside>
@@ -87,9 +87,26 @@ function appMarkup() {
     </div>`;
 }
 
+function popupMarkup(type) {
+  if (type !== 'overview') return '';
+  return `<div class="glass-overlay" data-popup-backdrop role="presentation"><section class="glass-modal" role="dialog" aria-modal="true" aria-labelledby="glass-title"><button class="glass-close" data-action="close-popup" aria-label="Close popup">×</button><p class="eyebrow">PULSEFIELD · SYSTEM OVERVIEW</p><h2 id="glass-title">Field response, at a glance.</h2><p class="glass-description">Local triage remains available even when connectivity or AI services are not. Review the workflow and open an incident when ready.</p><div class="glass-modal-grid"><div><span class="glass-icon">◉</span><strong>Local safety engine</strong><small>Immediate deterministic escalation</small></div><div><span class="glass-icon">◇</span><strong>Hybrid assistance</strong><small>Source-labelled model handoff</small></div><div><span class="glass-icon">▤</span><strong>Incident record</strong><small>Timeline and portable export</small></div></div><a class="button emergency glass-cta" href="#triage" data-action="close-popup">Open field workflow <span>→</span></a></section></div>`;
+}
+
 function render() {
   app.innerHTML = appMarkup();
 }
+app.addEventListener('click', (event) => {
+  const trigger = event.target.closest('[data-popup]');
+  if (!trigger) return;
+  event.preventDefault();
+  const markup = popupMarkup(trigger.dataset.popup);
+  if (!markup) return;
+  app.insertAdjacentHTML('beforeend', markup);
+  requestAnimationFrame(() => app.querySelector('.glass-modal')?.classList.add('visible'));
+  app.querySelector('.glass-close')?.focus();
+});
+app.addEventListener('click', (event) => { if (event.target.matches('[data-popup-backdrop]')) event.target.remove(); });
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape') app.querySelector('[data-popup-backdrop]')?.remove(); });
 
 function demoHandoff(triage) {
   return {
@@ -163,6 +180,7 @@ function downloadExport() {
 app.addEventListener('click', async (event) => {
   const action = event.target.closest('[data-action]')?.dataset.action;
   if (!action) return;
+  if (action === 'close-popup') { app.querySelector('[data-popup-backdrop]')?.remove(); return; }
   if (action === 'load-demo') { const textarea = document.querySelector('#narrative'); textarea.value = DEMO_NARRATIVE; textarea.focus(); }
   if (action === 'clear') { const textarea = document.querySelector('#narrative'); textarea.value = ''; textarea.focus(); }
   if (action === 'run-triage') await runTriage();
