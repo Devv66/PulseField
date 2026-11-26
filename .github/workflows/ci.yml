@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Firebase emulator test tooling
-        run: npm install --no-save firebase-tools @firebase/rules-unit-testing
+        run: npm install --no-save firebase-tools @firebase/rules-unit-testing@5 --legacy-peer-deps
       - name: Run Firestore rules tests in emulator
         run: npx firebase emulators:exec --only firestore --project demo-pulsefield-rules "node --test tests/firestore.rules.test.mjs"
       - name: Run application tests and production build
