@@ -15,6 +15,7 @@ service cloud.firestore {
           'timeline', 'ownerUid', 'savedAt'
         ])
         && data.id is string
+        && data.id.size() > 0
         && data.status is string
         && data.createdAt is string
         && data.updatedAt is string
@@ -22,21 +23,22 @@ service cloud.firestore {
         && data.narrative.size() <= 4000
         && data.triage is map
         && data.timeline is list
+        && data.timeline.size() <= 100
         && data.ownerUid is string
         && data.savedAt is timestamp
         && (!('ai' in data) || data.ai is map);
     }
 
     match /users/{userId}/incidents/{incidentId} {
-      // Users may only create valid incidents in their own namespace.
+      // Firestore generates document IDs with addDoc; the incident's own ID
+      // is a separate client-side identifier and is not required to match.
       allow create: if signedInAs(userId)
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.id == incidentId
                     && validIncidentShape(request.resource.data);
 
       allow read: if signedInAs(userId);
 
-      // Preserve identity and ownership on updates; enforce the same shape.
+      // Preserve the incident's identity, ownership, and creation timestamp.
       allow update: if signedInAs(userId)
                     && request.resource.data.ownerUid == resource.data.ownerUid
                     && request.resource.data.id == resource.data.id
