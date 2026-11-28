@@ -14,3 +14,77 @@
 @media(max-width:900px){.shell{padding:0 24px}.hero{grid-template-columns:1fr;gap:25px;padding:50px 0 36px}.mission-card{max-width:480px}.triage-workspace{grid-template-columns:1fr}.side-rail{border:0;border-top:1px solid var(--line);min-height:0}.side-rail .protocol-item{display:none}.emergency-link{margin-top:0;padding-top:0}.result-grid{grid-template-columns:1fr}.result-grid article{border-right:0;border-bottom:1px solid var(--line);padding:18px 0;margin:0}.result-grid article:last-child{border-bottom:0}.principles{grid-template-columns:1fr}.principles article{border-right:0;border-bottom:1px solid var(--line);padding:23px 0;margin:0}.principles article:last-child{border-bottom:0}.connection small{display:none}}
 @media(max-width:570px){.shell{padding:0 15px}.topbar{height:auto;min-height:68px;gap:10px}.brand{font-size:19px}.brand img{width:27px}.connection{max-width:56%;gap:7px}.connection strong{max-width:155px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px}.hero{padding-top:36px}.hero h1{font-size:clamp(36px,10vw,50px)}.lede{font-size:13px;line-height:1.7}.composer,.triage-output,.ai-augment,.timeline{padding:22px 18px}.composer-head,.composer-foot,.section-heading{align-items:flex-start;flex-direction:column;gap:11px}.secure-note{text-align:left;max-width:100%}.composer-foot{gap:15px}.button.emergency{width:100%}.quick-row{flex-wrap:wrap}.handoff-grid,.ai-lists{grid-template-columns:1fr;gap:15px}.ai-actions{flex-wrap:wrap}.source-badge{font-size:8px}.timeline-row{grid-template-columns:11px 1fr}.timeline-row time{grid-column:2;margin-top:6px}.record-actions{justify-content:stretch}.record-actions .button{flex:1}footer{flex-direction:column}.notice{margin-top:0}.glass-overlay{padding:12px}.glass-modal{padding:25px 20px;border-radius:18px}.glass-modal-grid{gap:8px}.glass-close{top:10px;right:10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+/* PulseField premium dark visual system */
+:root{color-scheme:dark;--ink:#e7edf6;--muted:#93a3b7;--page:#080d16;--panel:#101927;--panel-2:#0d1521;--line:#233247;--mint:#58b9f2;--mint-deep:#2585c5;--amber:#e9b76b;--red:#ff747e}
+html,body{background:#080d16;color:var(--ink)}
+body{background:radial-gradient(ellipse at 75% 0%,rgba(30,76,112,.22),transparent 38%),linear-gradient(180deg,#080d16,#0a101b 62%,#080d16)}
+.shell{max-width:1440px}
+.topbar{border-color:#1b293b}
+.brand span span{color:#58b9f2}
+.connection strong{color:#d9e5f2}
+.status-light.local{background:#58b9f2;box-shadow:0 0 0 4px rgba(88,185,242,.12)}
+.status-light.online{background:#4bd5a0;box-shadow:0 0 0 4px rgba(75,213,160,.12)}
+.eyebrow{color:#64c2f3}
+h1 em{color:#58b9f2}
+.lede{color:#9aabc0}
+.hero-chips span,.chip{background:#0d1624;border-color:#243449;color:#a8b9cd}
+.mission-card{background:linear-gradient(145deg,#111d2c,#0d1725);border-color:#24364b;box-shadow:0 18px 55px rgba(0,0,0,.22)}
+.mission-card>p:not(.eyebrow){color:#93a6bb}
+.mission-card a,.glass-trigger{color:#63c3f3}
+.glass-trigger{background:#101c2a;border-color:#2b4057}
+.pulse-orb i{border-color:rgba(88,185,242,.4)}
+.pulse-orb i:nth-child(1){background:#58b9f2}
+.notice{background:#101c2a;color:#b8c9dc;border-color:#58b9f2}
+.notice.warning{background:#241d14;color:#e4c28d;border-color:#e9b76b}
+.notice.danger{background:#28161e;color:#f2a4aa;border-color:#ff747e}
+.triage-workspace,.empty-state,.triage-output,.ai-augment,.timeline{background:linear-gradient(145deg,#111b29,#0e1723);border-color:#243449;box-shadow:0 16px 45px rgba(0,0,0,.2)}
+.triage-workspace{box-shadow:0 18px 50px rgba(0,0,0,.22)}
+.composer label{color:#a1b2c7}
+textarea{background:#0a121d;border-color:#293a50;color:#e7edf6}
+textarea::placeholder{color:#60738b}
+textarea:focus{border-color:#58b9f2;box-shadow:0 0 0 3px rgba(88,185,242,.1)}
+.side-rail{background:#0b1420;border-color:#233348}
+.protocol-item{border-color:#213247}
+.protocol-item strong{color:#dce6f2}
+.protocol-item p,.composer-foot p{color:#91a4bb}
+.emergency-link{color:#e9b76b}
+.button.primary,.button.secondary{background:#102234;color:#77cdfb;border-color:#29465e}
+.button.secondary{background:#101b28}
+.button.emergency{background:#d95166;color:#fff;box-shadow:0 6px 20px rgba(217,81,102,.12)}
+.empty-state>p,.ai-augment.empty>p{color:#9aabc0}
+.empty-icon{background:#102438;color:#58b9f2}
+.empty-state>div:last-child{color:#62c3f3}
+.empty-state i{background:#58b9f2}
+.result-topline,.section-heading{border-color:#26364b}
+.result-grid{border-color:#26364b}
+.result-grid article{border-color:#26364b}
+.label{color:#63c3f3}
+li{color:#c3d0df}
+.metric{color:#91a4ba}
+.metric strong{color:#e2ebf5}
+.safety-note,.microcopy{color:#91a4ba}
+.section-heading h2,.composer h2{color:#e6edf6}
+.source-badge.local{background:#261e15;border-color:#57442a;color:#e9b76b}
+.source-badge.device{background:#10251f;border-color:#28513f;color:#69d2a8}
+.source-badge.cloud{background:#132439;border-color:#2d4967;color:#78b9ee}
+.handoff-grid p:not(.label){color:#c1cfdf}
+.ai-lists{border-color:#26364b}
+.ai-meta{color:#91a4ba}
+.timeline-row p{color:#b7c7d9}
+.timeline-row strong,.text-button{color:#63c3f3}
+.timeline-dot{background:#58b9f2}
+.timeline-row:not(:last-child):before{background:#26364b}
+.principles{border-color:#26364b}
+.principles article{border-color:#26364b}
+.principles h3{color:#dfe9f4}
+.principles p{color:#91a4ba}
+footer{border-color:#26364b;color:#8397ad}
+.glass-overlay{background:rgba(3,8,15,.76)}
+.glass-modal{background:linear-gradient(145deg,#102337,#101927);border-color:#30465e}
+.glass-modal::before{background:radial-gradient(circle,rgba(55,173,242,.16),transparent 70%)}
+.glass-modal .eyebrow{color:#74c9f4}
+.glass-modal-grid>div{border-color:#2a3e54;background:rgba(255,255,255,.025)}
+.glass-icon{color:#78cffa;background:rgba(55,173,242,.12)}
+@media(max-width:900px){.side-rail{border-top-color:#243449}}
+@media(max-width:570px){.shell{padding:0 16px}.topbar{gap:8px}.connection{max-width:58%}.mission-card{padding:22px}.composer,.triage-output,.ai-augment,.timeline{padding:22px 18px}}
