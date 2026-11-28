@@ -1,24 +1,51 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Each anonymous or signed-in session owns only its own incident namespace.
+    function signedInAs(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validIncidentShape(data) {
+      return data.keys().hasOnly([
+          'id', 'status', 'createdAt', 'updatedAt', 'narrative', 'triage',
+          'timeline', 'ai', 'ownerUid', 'savedAt'
+        ])
+        && data.keys().hasAll([
+          'id', 'status', 'createdAt', 'updatedAt', 'narrative', 'triage',
+          'timeline', 'ownerUid', 'savedAt'
+        ])
+        && data.id is string
+        && data.id.size() > 0
+        && data.status is string
+        && data.createdAt is string
+        && data.updatedAt is string
+        && data.narrative is string
+        && data.narrative.size() <= 4000
+        && data.triage is map
+        && data.timeline is list
+        && data.timeline.size() <= 100
+        && data.ownerUid is string
+        && data.savedAt is timestamp
+        && (!('ai' in data) || data.ai is map);
+    }
+
     match /users/{userId}/incidents/{incidentId} {
-      allow create: if request.auth != null
-                    && request.auth.uid == userId
+      // Firestore generates document IDs with addDoc; the incident's own ID
+      // is a separate client-side identifier and is not required to match.
+      allow create: if signedInAs(userId)
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.keys().hasOnly([
-                      'id', 'status', 'createdAt', 'updatedAt', 'narrative', 'triage',
-                      'timeline', 'ai', 'ownerUid', 'savedAt'
-                    ]);
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null
-                    && request.auth.uid == userId
+                    && validIncidentShape(request.resource.data);
+
+      allow read: if signedInAs(userId);
+
+      // Preserve the incident's identity, ownership, and creation timestamp.
+      allow update: if signedInAs(userId)
                     && request.resource.data.ownerUid == resource.data.ownerUid
-                    && request.resource.data.keys().hasOnly([
-                      'id', 'status', 'createdAt', 'updatedAt', 'narrative', 'triage',
-                      'timeline', 'ai', 'ownerUid', 'savedAt'
-                    ]);
-      allow delete: if request.auth != null && request.auth.uid == userId;
+                    && request.resource.data.id == resource.data.id
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && validIncidentShape(request.resource.data);
+
+      allow delete: if signedInAs(userId);
     }
   }
 }
